@@ -7,6 +7,8 @@ from django.core.mail.backends.base import BaseEmailBackend
 from django.core.mail.message import sanitize_address
 
 
+local_storage = threading.local()
+
 class SESEmailBackend(BaseEmailBackend):
     def __init__(self, *args, **kwargs):
         super(SESEmailBackend, self).__init__(*args, **kwargs)
@@ -17,7 +19,7 @@ class SESEmailBackend(BaseEmailBackend):
         if self.connection:
             return False
         ses_region_name = settings.AWS_SES_REGION_NAME or 'us-west-2'
-        self.connection = boto3.client('ses', region_name=ses_region_name)
+        self.connection = self.get_boto_session().client('ses', region_name=ses_region_name)
         return True
 
     def close(self):
@@ -66,3 +68,12 @@ class SESEmailBackend(BaseEmailBackend):
                 raise
             return False
         return True
+
+
+    @staticmethod
+    def get_boto_session():
+        session = getattr(local_storage, 'session', None)
+        if session is None:
+            session = boto3.Session()
+            local_storage.session = session
+        return session
