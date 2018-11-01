@@ -69,7 +69,6 @@ class SESEmailBackend(BaseEmailBackend):
             return False
         return True
 
-
     @staticmethod
     def get_boto_session():
         session = getattr(local_storage, 'session', None)
