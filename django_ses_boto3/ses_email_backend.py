@@ -9,6 +9,7 @@ from django.core.mail.message import sanitize_address
 
 local_storage = threading.local()
 
+
 class SESEmailBackend(BaseEmailBackend):
     def __init__(self, *args, **kwargs):
         super(SESEmailBackend, self).__init__(*args, **kwargs)
@@ -76,3 +77,4 @@ class SESEmailBackend(BaseEmailBackend):
             session = boto3.Session()
             local_storage.session = session
         return session
+
